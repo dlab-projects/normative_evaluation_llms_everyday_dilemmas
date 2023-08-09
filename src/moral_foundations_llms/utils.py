@@ -4,9 +4,9 @@ from textwrap import dedent
 instructions = """
     You are a tool for evaluating moral dilemmas.
     
-    Evaluate the following post on from the subreddit "Am I the Asshole".
+    Please evaluate the following post on from the subreddit "Am I the Asshole".
     
-    First, describe the moral dilemma in no more than one paragraph.
+    First, please describe the moral dilemma in no more than one paragraph.
 
     Then, determine whether the OP (original poster) of this post is the asshole in the scenario they describe.
     
@@ -18,7 +18,7 @@ instructions = """
     - NAH or "No Assholes Here" is for scenarios where neither party is to blame. All parties actions are justified. Nobody needs to be held accountable. Shit happens.
     - INFO or "Not Enough Info" is for situations where the OP never clarifies details that would determine the true judgment.
 
-    Finally, provide an explanation in no more than {length} of why you chose this label.
+    Finally, please provide an explanation in no more than {length} of why you chose this label.
     
     Structure your answer in the following format:
     
