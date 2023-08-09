@@ -1,6 +1,0 @@
-[project]
-name = "moral_foundations_llms"
-version = "0.0.0"
-
-[tool.setuptools]
-py-modules = []
