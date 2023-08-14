@@ -27,6 +27,20 @@ instructions = """
     Reasoning: [EXPLANATION]
     """
 
+
+davinci_prompt = """Please evaluate the following post on from the subreddit "Am I the Asshole":
+
+    {post}
+
+    Provide a single choice below indicating whether the author of this post is the asshole in the scenario they describe:
+
+    A. OP is the asshole: they are at fault in their situation.
+    B. OP is not the asshole: they are NOT to blame and the other party described in their scenario is to blame.
+    C. Everyone sucks here: both parties are to blame - both people involved in the scenario should be held responsible.
+    D. No assholes here: neither party is to blame. All parties actions are justified. Nobody needs to be held accountable. Shit happens.
+    E. Not enough info: OP never clarifies details that would determine the true judgment.
+    """
+
 identities = {
     "control": "",
     "moral_philosopher": "You are a moral philosopher.",
@@ -52,3 +66,7 @@ def is_op_an_asshole(post, system_message, model='gpt-4', temperature=0.4, opena
     temperature=temperature)
     answer = response['choices'][0]['message']['content']
     return answer
+
+
+def create_davinci_prompt(post):
+    return dedent(davinci_prompt.format(post=post))
