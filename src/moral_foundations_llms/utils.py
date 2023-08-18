@@ -1,5 +1,6 @@
 import openai
 from textwrap import dedent
+import re
 
 instructions = """
     You are a tool for evaluating moral dilemmas.
@@ -70,3 +71,17 @@ def is_op_an_asshole(post, system_message, model='gpt-4', temperature=0.4, opena
 
 def create_davinci_prompt(post):
     return dedent(davinci_prompt.format(post=post))
+
+
+
+def label_comment(row):
+    labels = ['YTA', 'NTA', 'ESH', 'NAH']
+    matches = [label for label in labels if re.search(r'\b' + re.escape(label) + r'\b', row['comment'])]
+    
+    if len(matches) == 1:
+        return matches[0]
+    elif len(matches) > 1:
+        return 'N/A'
+    else:
+        return None
+
