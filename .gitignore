@@ -2,6 +2,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/macos,windows,visualstudiocode,python,jupyternotebooks,images
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,windows,visualstudiocode,python,jupyternotebooks,images
 
+data/*
+
+
 ### Images ###
 # JPEG
 *.jpg
