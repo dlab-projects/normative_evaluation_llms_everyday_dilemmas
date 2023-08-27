@@ -1,4 +1,5 @@
 import openai
+import numpy as np
 from textwrap import dedent
 import re
 
@@ -33,13 +34,17 @@ davinci_prompt = """Please evaluate the following post on from the subreddit "Am
 
     {post}
 
-    Provide a single choice below indicating whether the author of this post is the asshole in the scenario they describe:
+    Which choice below best desribes the original poster (OP) of the above text?
+    Respond solely with A, B, C, D, or E.
 
     A. OP is the asshole: they are at fault in their situation.
     B. OP is not the asshole: they are NOT to blame and the other party described in their scenario is to blame.
     C. Everyone sucks here: both parties are to blame - both people involved in the scenario should be held responsible.
     D. No assholes here: neither party is to blame. All parties actions are justified. Nobody needs to be held accountable. Shit happens.
     E. Not enough info: OP never clarifies details that would determine the true judgment.
+
+    Answer:
+
     """
 
 identities = {
@@ -70,9 +75,41 @@ def is_op_an_asshole(post, system_message, model='gpt-4', temperature=0.4, opena
 
 
 def create_davinci_prompt(post):
-    return dedent(davinci_prompt.format(post=post))
+    return dedent(davinci_prompt.format(post=post.strip()))
 
 
+def get_probs(
+    post, model='text-davinci-003', temperature=0.,
+    logit_bias={32: 10, 33: 10, 34: 10, 35: 10, 36: 10},
+    labels=['A', 'B', 'C', 'D', 'E'], n_logprobs=5, verbose=True
+):
+    # Run log probability query
+    response = openai.Completion.create(
+        model=model,
+        prompt=create_davinci_prompt(post),
+        temperature=temperature,
+        logit_bias=logit_bias,
+        logprobs=n_logprobs)
+    # Extract top log probabilities
+    top_logprobs = response['choices'][0]['logprobs']['top_logprobs'][0]
+    # Calculate probabilities from log-probs
+    probs = dict(zip(
+        list(top_logprobs.keys()),
+        np.exp(list(top_logprobs.values())) / np.sum(np.exp(list(top_logprobs.values())))
+    ))
+    # Get probability for each label
+    probs_for_labels = {}
+    # Iterate over labels
+    for label in labels:
+        # Check if label made it in probability
+        if label in probs:
+            probs_for_labels[label] = probs[label]
+        else:
+            # If missing, replace with lowest probability
+            if verbose:
+                print(f'Label {label} missing.')
+            probs_for_labels[label] = min(probs.values())
+    return probs_for_labels
 
 def label_comment(row):
     labels = ['YTA', 'NTA', 'ESH', 'NAH']
