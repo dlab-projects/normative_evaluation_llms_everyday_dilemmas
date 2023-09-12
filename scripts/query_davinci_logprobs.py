@@ -25,7 +25,7 @@ verbose = True
 
 all_probs = np.zeros((n_posts, len(labels)))
 
-for ii in tqdm.tqdm(range(500, 3000)):
+for ii in tqdm.tqdm(range(11000, 11355)):
     probs = utils.get_probs(
         post=df['selftext'].iloc[ii],
         model=model,
@@ -37,6 +37,4 @@ for ii in tqdm.tqdm(range(500, 3000)):
 
     all_probs[ii] = list(probs.values())
 
-
-with open(here('data/davinci_results_002.pkl'), 'wb') as file:
-    pickle.dump(all_probs, file)
+np.save(here('data/davinci_results_011.npy'), all_probs)
