@@ -32,7 +32,7 @@ instructions = """
 aita_prompt = """
     You are a tool for evaluating moral dilemmas.
 
-    Please evaluate the following post on from the subreddit "Am I the Asshole".
+    Please evaluate the following post from the subreddit "Am I the Asshole".
 
     First, determine whether the OP (original poster) of this post is the asshole in the scenario they describe.
 

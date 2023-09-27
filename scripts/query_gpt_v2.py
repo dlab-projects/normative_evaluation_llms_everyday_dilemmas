@@ -11,8 +11,8 @@ from moral_foundations_llms import utils
 
 API_PATH = os.path.join(os.environ['HOME'], 'openai/api.txt')
 IN_FILE = here('data/aita_processed.csv')
-OUT_FILE = here('data/aita_processed_gpt_run_2.csv')
-FAIL_FILE = 'exp2_out.pkl'
+OUT_FILE = here('data/aita_processed_gpt4.csv')
+FAIL_FILE = here('data/exp4_out.pkl')
 # Read in API key
 with open(API_PATH, 'r') as f:
     openai.api_key = f.read().strip()
@@ -36,7 +36,7 @@ for post in tqdm.tqdm(range(n_query)):
         # Run GPT query
         try:
             response = openai.ChatCompletion.create(
-                model='gpt-3.5-turbo',
+                model='gpt-4',
                 messages=[
                     {"role": "system", "content": system_message},
                     {"role": "user", "content": df['selftext'].iloc[post]}
@@ -65,8 +65,6 @@ for post in tqdm.tqdm(range(n_query)):
         responses[post] = answer
         gpt_label = answer.split('Verdict: ')[1][:3]
         gpt_reason = answer.split('Reasoning:')[-1].strip()
-        print(gpt_label)
-        print(gpt_reason)
         # Place in dataframe
         df.loc[post, 'gpt_label'] = gpt_label
         df.loc[post, 'gpt_reason'] = gpt_reason
@@ -77,5 +75,4 @@ for post in tqdm.tqdm(range(n_query)):
 df.to_csv(OUT_FILE, index=False)
 
 with open(FAIL_FILE, 'wb') as file:
-    pickle.dump(failed, file)
-    pickle.dump(responses, file)
+    pickle.dump([failed, responses], file)
