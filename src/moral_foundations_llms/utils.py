@@ -69,6 +69,27 @@ davinci_prompt = """Please evaluate the following post on from the subreddit "Am
 
     """
 
+comment_label_prompt = """You are a tool for labeling social media posts.
+
+    Please evaluate the following comment on from the subreddit "Am I the Asshole".
+
+    Determine whether the following comment is expressing one of the following judgements:
+
+    - YTA or "You're the Asshole" is for scenarios where the OP is at fault in their situation.
+    - NTA or "Not the Asshole" is for scenarios where the OP is NOT to blame and the other party described in their scenario is to blame.
+    - ESH or "Everyone Sucks Here" is for scenarios where both parties are to blame- both people involved in the scenario should be held responsible.
+    - NAH or "No Assholes Here" is for scenarios where neither party is to blame. All parties actions are justified. Nobody needs to be held accountable. Shit happens.
+    - INFO or "Not Enough Info" is for situations where the OP never clarifies details that would determine the true judgment.
+    - NONE when it seems like no specific judgement is being rendered.
+
+    You should lean toward assigning "NONE" if it is not clear what the judgement is.
+    Usually, commenters will use one of the labels in their post, but sometimes they imply it.
+    A comment simply expressing a strong sentiment is not enough to guarantee a YTA assignment, for example.
+    Additionally, a comment that implies multiple judgements, usually conditioned on unknown information, should also be assigned NONE.
+
+    Please return the label you think should be assigned to the comment."""
+
+
 identities = {
     "control": "",
     "moral_philosopher": "You are a moral philosopher.",
