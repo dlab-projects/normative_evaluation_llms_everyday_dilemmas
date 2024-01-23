@@ -11,8 +11,8 @@ from moral_foundations_llms import utils
 
 API_PATH = os.path.join(os.environ['HOME'], 'openai/api.txt')
 IN_FILE = here('data/aita_final_v2.csv')
-OUT_FILE = here('data/aita_final_v2.csv')
-FAIL_FILE = here('data/exp_gpt_4_out.pkl')
+OUT_FILE = here('data/aita_nan_comments_labels.csv')
+FAIL_FILE = here('data/escalation_labels_fail.pkl')
 # Read in API key
 with open(API_PATH, 'r') as f:
     openai.api_key = f.read().strip()
@@ -20,24 +20,21 @@ with open(API_PATH, 'r') as f:
 df = pd.read_csv(IN_FILE)
 
 n_query = df.shape[0]
+n_query = 100
 failed = []
 responses = {}
 
 # Iterate over posts
-for post in tqdm.tqdm(range(8000, 9000)):
+for post in tqdm.tqdm(range(n_query)):
     retries = 0
     completed = False
     while not completed and retries < 3:
-        # Extract number of sentences
-        n_sentences = len(nltk.sent_tokenize(df.iloc[post]['top_comment']))
-        # Create system message
-        system_message = utils.create_system_message(identity="", length=f"{n_sentences} sentences")
         # Run GPT query
         try:
             response = openai.ChatCompletion.create(
-                model='gpt-4',
+                model='gpt-3.5-turbo',
                 messages=[
-                    {"role": "system", "content": system_message},
+                    {"role": "system", "content": utils.escalation_prompt},
                     {"role": "user", "content": df['selftext'].iloc[post]}
                 ],
                 temperature=0.4)
@@ -62,16 +59,14 @@ for post in tqdm.tqdm(range(8000, 9000)):
         answer = response['choices'][0]['message']['content']
         # Store answer, dilemma, label, and reason
         responses[post] = answer
-        gpt_label = answer.split('Verdict: ')[1][:3]
-        gpt_reason = answer.split('Reasoning:')[-1].strip()
+        print(answer)
         # Place in dataframe
-        df.loc[post, 'gpt4_label'] = gpt_label
-        df.loc[post, 'gpt4_reason'] = gpt_reason
+        df.loc[post, 'gpt_comment_label'] = answer
         completed = True
     if not completed:
         failed.append(post)
 
-df.to_csv(OUT_FILE, index=False)
+#df.to_csv(OUT_FILE, index=False)
 
-with open(FAIL_FILE, 'wb') as file:
-    pickle.dump([failed, responses], file)
+#with open(FAIL_FILE, 'wb') as file:
+#    pickle.dump([failed, responses], file)
