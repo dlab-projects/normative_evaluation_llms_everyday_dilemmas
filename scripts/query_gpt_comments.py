@@ -2,6 +2,7 @@ import pandas as pd
 import tqdm
 import openai
 import nltk
+import numpy as np
 import os
 import pickle
 import sys
@@ -18,6 +19,7 @@ with open(API_PATH, 'r') as f:
     openai.api_key = f.read().strip()
 # Read in processed data
 df = pd.read_csv(IN_FILE)
+out = pd.read_csv(OUT_FILE)
 df = df[df['comment_author'] != 'AutoModerator']
 df = df[df['comment_label'].isna()].reset_index(drop=True)
 
@@ -25,12 +27,15 @@ n_query = df.shape[0]
 failed = []
 responses = {}
 
+posts = np.argwhere(out['gpt_comment_label'].isna()).ravel()
+
 # Iterate over posts
-for post in tqdm.tqdm(range(n_query)):
+for post in tqdm.tqdm(posts):
     retries = 0
     completed = False
     while not completed and retries < 3:
         # Run GPT query
+        # print(f'Post {post}, retry {retries}')
         try:
             response = openai.ChatCompletion.create(
                 model='gpt-3.5-turbo',
@@ -61,12 +66,12 @@ for post in tqdm.tqdm(range(n_query)):
         # Store answer, dilemma, label, and reason
         responses[post] = answer
         # Place in dataframe
-        df.loc[post, 'gpt_comment_label'] = answer
+        out.loc[post, 'gpt_comment_label'] = answer
         completed = True
     if not completed:
         failed.append(post)
 
-df.to_csv(OUT_FILE, index=False)
+out.to_csv(OUT_FILE, index=False)
 
 with open(FAIL_FILE, 'wb') as file:
     pickle.dump([failed, responses], file)

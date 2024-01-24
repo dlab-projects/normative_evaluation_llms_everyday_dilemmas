@@ -10,8 +10,7 @@ from pyprojroot import here
 from moral_foundations_llms import utils
 
 API_PATH = os.path.join(os.environ['HOME'], 'openai/api.txt')
-IN_FILE = here('data/aita_final_v2.csv')
-OUT_FILE = here('data/aita_nan_comments_labels.csv')
+IN_FILE = here('data/reference_set_indexed.csv')
 FAIL_FILE = here('data/escalation_labels_fail.pkl')
 # Read in API key
 with open(API_PATH, 'r') as f:
@@ -20,7 +19,6 @@ with open(API_PATH, 'r') as f:
 df = pd.read_csv(IN_FILE)
 
 n_query = df.shape[0]
-n_query = 100
 failed = []
 responses = {}
 
@@ -57,16 +55,18 @@ for post in tqdm.tqdm(range(n_query)):
             continue
         # Extract answer
         answer = response['choices'][0]['message']['content']
+        gpt_label = answer.split('Verdict: ')[1][:3]
+        gpt_reason = answer.split('Reasoning:')[-1].strip()
         # Store answer, dilemma, label, and reason
         responses[post] = answer
-        print(answer)
         # Place in dataframe
-        df.loc[post, 'gpt_comment_label'] = answer
+        df.loc[post, 'gpt_escalation_label'] = gpt_label
+        df.loc[post, 'gpt_escalation_reason'] = gpt_reason
         completed = True
     if not completed:
         failed.append(post)
 
-#df.to_csv(OUT_FILE, index=False)
+df.to_csv(IN_FILE, index=False)
 
-#with open(FAIL_FILE, 'wb') as file:
-#    pickle.dump([failed, responses], file)
+with open(FAIL_FILE, 'wb') as file:
+    pickle.dump([failed, responses], file)
