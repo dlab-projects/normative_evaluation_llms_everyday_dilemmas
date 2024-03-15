@@ -321,3 +321,15 @@ def label_comment(row):
     else:
         return None
 
+
+def label_detector(s):
+    labels = ['YTA', 'NTA', 'ESH', 'NAH', 'INFO']
+    pattern = '|'.join(labels)
+    matches = re.findall(pattern, s)
+
+    if len(matches) == 1:
+        return matches[0]
+    elif len(matches) == 0:
+        return 'NO MATCH'
+    else:
+        return 'OVERMATCH'
