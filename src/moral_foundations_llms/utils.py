@@ -323,12 +323,29 @@ def label_comment(row):
 
 
 def label_detector(s):
-    labels = ['YTA', 'NTA', 'ESH', 'NAH', 'INFO']
+    labels = ['YTA', 'NTA', 'ESH', 'NAH', 'INFO', 'INF',
+              'yta ', 'nta ', 'esh ', 'nah ',
+              ' yta ', ' nta ', ' esh ', ' nah ', ' info ',
+              'yta\.', 'nta\.', 'esh\.', 'nah\.', 'info\.',
+              'Yta\.', 'Nta\.', 'Esh\.', 'Nah\.', 'Info\.']
     pattern = '|'.join(labels)
     matches = re.findall(pattern, s)
+    matches = [match.strip() for match in matches]
+    matches = list(set(matches))
 
     if len(matches) == 1:
-        return matches[0]
+        matches = matches[0]
+        if matches == 'yta' or matches == 'yta.' or matches == 'Yta.':
+            return 'YTA'
+        elif matches == 'nta' or matches == 'nta.' or matches == 'Nta.':
+            return 'NTA'
+        elif matches == 'esh' or matches == 'esh.' or matches == 'Esh.':
+            return 'ESH'
+        elif matches == 'nah' or matches == 'nah.' or matches == 'Nah.':
+            return 'NAH'
+        elif matches == 'INFO' or matches == 'info' or matches == 'info.' or matches == 'Info.':
+            return 'INF'
+        return matches
     elif len(matches) == 0:
         return 'NO MATCH'
     else:
