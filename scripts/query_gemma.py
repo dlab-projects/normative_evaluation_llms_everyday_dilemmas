@@ -42,7 +42,7 @@ for idx in tqdm.tqdm(range(df.shape[0])):
 
 out_df = pd.DataFrame(
     data={
-        'gemma_label_5': labels,
-        'gemma_reason_5': verdicts
+        'gemma_label_1': labels,
+        'gemma_reason_1': verdicts
     }
-).to_csv('../data/gemma_run_5.csv', index=False)
+).to_csv('../data/gemma_run_1.csv', index=False)
