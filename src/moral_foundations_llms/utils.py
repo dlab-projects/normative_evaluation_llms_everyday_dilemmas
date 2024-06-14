@@ -322,31 +322,37 @@ def label_comment(row):
         return None
 
 
-def label_detector(s):
+def clean_single_label(s):
+        return s.strip().lower().replace('.', '').replace('info', 'inf').replace('*', '').upper()
+
+
+def label_detector(s, check_first_line=True, return_first_if_multiple=False):
     labels = ['YTA', 'NTA', 'ESH', 'NAH', 'INFO', 'INF',
-              'yta ', 'nta ', 'esh ', 'nah ',
+              '^yta ', '^nta ', '^esh ', '^nah ',
+              'Yta', 'Nta', 'Esh', 'Nah', 'NaH',
+              '\*\*yta\*\*', '\*\*nta\*\*', '\*\*esh\*\*', '\*\*nah\*\*', '\*\*info\*\*',
+              'yta\n', 'nta\n', 'esh\n', 'nah\n', 'info\n',
               ' yta ', ' nta ', ' esh ', ' nah ', ' info ',
-              'yta\.', 'nta\.', 'esh\.', 'nah\.', 'info\.',
+              '^yta\.', '^nta\.', '^esh\.', '^nah\.', '^info\.',
               'Yta\.', 'Nta\.', 'Esh\.', 'Nah\.', 'Info\.']
     pattern = '|'.join(labels)
+    if check_first_line:
+        matches = re.findall(pattern, s.strip().partition('\n')[0])
+        if len(matches) == 1:
+            return clean_single_label(matches[0])
+        
     matches = re.findall(pattern, s)
-    matches = [match.strip() for match in matches]
-    matches = list(set(matches))
+    matches = [clean_single_label(match) for match in matches]
 
     if len(matches) == 1:
-        matches = matches[0]
-        if matches == 'yta' or matches == 'yta.' or matches == 'Yta.':
-            return 'YTA'
-        elif matches == 'nta' or matches == 'nta.' or matches == 'Nta.':
-            return 'NTA'
-        elif matches == 'esh' or matches == 'esh.' or matches == 'Esh.':
-            return 'ESH'
-        elif matches == 'nah' or matches == 'nah.' or matches == 'Nah.':
-            return 'NAH'
-        elif matches == 'INFO' or matches == 'info' or matches == 'info.' or matches == 'Info.':
-            return 'INF'
-        return matches
+        return clean_single_label(matches[0])
     elif len(matches) == 0:
         return 'NO MATCH'
     else:
-        return 'OVERMATCH'
+        if return_first_if_multiple:
+            return clean_single_label(matches[0])
+        matches = list(set(matches))
+        if len(matches) == 1:
+            return clean_single_label(matches[0])
+        else:
+            return 'OVERMATCH'
