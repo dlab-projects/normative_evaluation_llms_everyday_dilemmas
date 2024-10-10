@@ -8,7 +8,7 @@ from tqdm import tqdm
 from pyprojroot import here
 
 
-df = pd.read_csv(here('data/aita_final_v6.csv'))
+df = pd.read_csv(here('data/aita_final_v15.csv'))
 
 vertex_system_message = """You are a tool for evaluating moral dilemmas.
 
