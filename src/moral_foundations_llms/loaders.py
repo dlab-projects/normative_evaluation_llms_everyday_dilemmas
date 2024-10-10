@@ -24,21 +24,79 @@ class RedditScenariosCorpus(Dataset):
         return len(self.outputs)
 
 
+class AITACorpus(Dataset):
+    def __init__(self, path, tokenizer='roberta-base'):
+        self.path = path
+        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer)
+        self.setup()
+
+    def setup(self):
+        def tokenize_function(examples):
+            return self.tokenizer(
+                examples['selftext'], truncation=True, padding="max_length"
+            )
+
+        df = pd.read_csv(self.path)
+        data = datasets.Dataset.from_pandas(df)
+        tokenized = data.map(tokenize_function, batched=True)
+        self.input_ids = tokenized['input_ids']
+        self.attention_mask = tokenized['attention_mask']
+
+    def __getitem__(self, idx):
+        return {
+            "input_ids": torch.tensor(self.input_ids[idx]),
+            "attention_mask": torch.tensor(self.attention_mask[idx]),
+        }
+
+    def __len__(self):
+        return len(self.input_ids)
+
+
+class AITAVerdictCorpus(Dataset):
+    def __init__(self, path, tokenizer='roberta-large', reason='top_comment'):
+        self.path = path
+        self.reason = reason
+        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer)
+        self.setup()
+
+    def setup(self):
+        def tokenize_function(examples):
+            return self.tokenizer(
+                examples[self.reason], truncation=True, padding="max_length"
+            )
+
+        df = pd.read_csv(self.path)
+        data = datasets.Dataset.from_pandas(df)
+        tokenized = data.map(tokenize_function, batched=True)
+        self.input_ids = tokenized['input_ids']
+        self.attention_mask = tokenized['attention_mask']
+
+    def __getitem__(self, idx):
+        return {
+            "input_ids": torch.tensor(self.input_ids[idx]),
+            "attention_mask": torch.tensor(self.attention_mask[idx]),
+        }
+
+    def __len__(self):
+        return len(self.input_ids)
+
+
 class RedditScenariosModule(L.LightningDataModule):
-    def __init__(self, config=None, tokenizer='roberta-base'):
+    def __init__(self, config=None):
         super().__init__()
         # Default configuration
         default_config = {
             'batch_size': 32,
             'num_workers': 4,
             'val_size': 0.2,
-            'output': 'Feelings'
+            'output': 'Feelings',
+            'tokenizer': 'roberta-base'
         }
         # Update default config with any values provided by the user
         if config is not None:
             default_config.update(config)
         self.cfg = default_config
-        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer)
+        self.tokenizer = AutoTokenizer.from_pretrained(self.cfg['tokenizer'])
 
     def setup(self, stage: str):
         def tokenize_function(examples):
@@ -47,7 +105,7 @@ class RedditScenariosModule(L.LightningDataModule):
             )
 
         if stage == "fit":
-            df = pd.read_feather(self.cfg['path']).iloc[:5000].copy()
+            df = pd.read_feather(self.cfg['path']).copy()
             train, val = train_test_split(
                 df,
                 test_size=self.cfg['val_size'],
@@ -81,4 +139,5 @@ class RedditScenariosModule(L.LightningDataModule):
             num_workers=self.cfg['num_workers'],
             batch_size=self.cfg['batch_size']
         )
+
 

@@ -1,6 +1,6 @@
 import os
-
 import lightning as L
+
 from lightning.pytorch.callbacks import ModelCheckpoint
 from lightning.pytorch.callbacks.early_stopping import EarlyStopping
 from lightning.pytorch.loggers import TensorBoardLogger
@@ -10,15 +10,27 @@ from transformers import AutoTokenizer
 
 
 def run(path, config):
+    TOKENIZER = 'roberta-large'
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
     # Tokenizer
-    tokenizer = AutoTokenizer.from_pretrained('roberta-base')
-    # DataModule
-    data_module = RedditScenariosModule(config={'path': path, 'output': 'Harm'})
+    tokenizer = AutoTokenizer.from_pretrained(TOKENIZER)
+
+    # 'Relational_Obligation', 'Feelings', 'Fairness', 'Honesty', 'Social_Norms', 'Harm'
+    axis = 'Social_Norms'
+    # Configurations
+    data_module_cfg = {
+        'path': path,
+        'output': axis,
+        'batch_size': 16,
+        'tokenizer': TOKENIZER}
+    config['base'] = TOKENIZER
+
+    # Callbacks
     checkpoint_callback = ModelCheckpoint(
         monitor='val_loss',
         dirpath='checkpoints',
+        filename=f'checkpoint_{axis}_' + '{epoch}-{val_loss:.2f}',
         every_n_epochs=2,
         save_on_train_epoch_end=True)
     early_stopping_callback = EarlyStopping(
@@ -27,14 +39,24 @@ def run(path, config):
         patience=3,
         mode='min',
         verbose=True)
+    # Logger
+    logger = TensorBoardLogger(
+        save_dir="logs",
+        name=f"model_{axis}",
+        version=0)
+
+    # Data Module
+    data_module = RedditScenariosModule(config=data_module_cfg)
     # Model
     model = RedditScenarioModel(config, tokenizer)
-    logger = TensorBoardLogger("logs", name="model_Harm")
+
     # Trainer
     trainer = L.Trainer(
-        accelerator="mps",
+        accelerator="cuda",
         max_epochs=config['epoch'],
+        devices=1,
         logger=logger,
+        precision="bf16-mixed",
         callbacks=[checkpoint_callback,
                    early_stopping_callback])
 
@@ -45,8 +67,8 @@ if __name__ == "__main__":
     # Configuration dictionary
     path = 'data/aita_labels_text.feather'
     config = {
-        'lr': 2e-5,
-        'epoch': 3,
+        'lr': 2e-6,
+        'epoch': 5,
         'accumulate_grad_batches': 1,
         'warmup_ratio': 0.1
     }
