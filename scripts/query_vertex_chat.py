@@ -47,15 +47,15 @@ safety_settings={
     generative_models.HarmCategory.HARM_CATEGORY_HARASSMENT: generative_models.HarmBlockThreshold.BLOCK_NONE
 }
 
-
-with open(here('data/vertex_bison_1.pkl'), 'rb') as file:
+#response_texts = []
+with open(here('data/vertex_bison_3.pkl'), 'rb') as file:
     response_texts = pickle.load(file)
 
-for post in tqdm(range(9500, df.shape[0])):
+for post in tqdm(range(10000, df.shape[0])):
     chat = chat_model.start_chat(context=vertex_system_message)
     response = chat.send_message(df['selftext'].iloc[post], **parameters)
     response_texts.append(response.text)
 
 
-with open(here('data/vertex_bison_1.pkl'), 'wb') as file:
+with open(here('data/vertex_bison_3.pkl'), 'wb') as file:
     pickle.dump(response_texts, file)

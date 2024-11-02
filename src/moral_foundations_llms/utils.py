@@ -323,7 +323,7 @@ def label_comment(row):
 
 
 def clean_single_label(s):
-        return s.strip().lower().replace('.', '').replace('info', 'inf').replace('*', '').upper()
+    return s.strip().lower().replace('.', '').replace('info', 'inf').replace('*', '').upper()
 
 
 def label_detector(s, check_first_line=True, return_first_if_multiple=False):
@@ -356,3 +356,12 @@ def label_detector(s, check_first_line=True, return_first_if_multiple=False):
             return clean_single_label(matches[0])
         else:
             return 'OVERMATCH'
+
+def label_to_num(df):
+    return df.replace({
+        'NTA': 0,
+        'YTA': 1,
+        'ESH': 2,
+        'NAH': 3,
+        'INF': 4
+    })

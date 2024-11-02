@@ -67,7 +67,7 @@ MODEL_LABELS_PLOT = [
     'Redditor',
     'GPT 3.5',
     'GPT 4',
-    'Claude Sonnet',
+    'Claude Haiku',
     'Bison',
     'Llama 2 7B',
     'Mistral 7B',
@@ -88,3 +88,22 @@ AITA_LABELS_PLOT = [
     'NAH',
     'ESH',
     'INFO']
+
+ALL_LABELS = [
+    'reddit_label',
+    'gpt3.5_label_1',
+    'gpt3.5_label_2',
+    'gpt3.5_label_3',
+    'gpt4_label_1',
+    'claude_label_1',
+    'claude_label_2',
+    'claude_label_3',
+    'bison_label_1',
+    'bison_label_2',
+    'bison_label_3',
+    'llama_label_1',
+    'mistral_label_1',
+    'mistral_label_2',
+    'gemma_label_1',
+    'gemma_label_2',
+    'gemma_label_3']

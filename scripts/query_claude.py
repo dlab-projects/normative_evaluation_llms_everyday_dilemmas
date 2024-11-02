@@ -13,8 +13,8 @@ ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
 # Load client
 client = Anthropic(api_key=ANTHROPIC_API_KEY)
 # Load data
-df = pd.read_csv("../data/aita_final_v5.csv")
-OUT_FILE = "../data/aita_final_v5.csv"
+df = pd.read_csv("../data/aita_final_v17.csv")
+OUT_FILE = "../data/aita_final_v17.csv"
 
 for idx in tqdm(range(10000, df.shape[0])):
     post = df['selftext'].iloc[idx]
@@ -44,8 +44,7 @@ for idx in tqdm(range(10000, df.shape[0])):
         reason = answer
 
     # Place in dataframe
-    df.loc[idx, 'claude_response'] = answer
-    df.loc[idx, 'claude_label'] = label
-    df.loc[idx, 'claude_reason'] = reason
+    df.loc[idx, 'claude_label_3'] = label
+    df.loc[idx, 'claude_reason_3'] = reason
 
 df.to_csv(OUT_FILE, index=False)
