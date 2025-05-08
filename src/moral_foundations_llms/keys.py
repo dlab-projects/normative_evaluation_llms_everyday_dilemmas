@@ -17,6 +17,16 @@ MODELS = [
     'gemma']
 n_models = len(MODELS)
 
+LLMs = [
+    'gpt3.5',
+    'gpt4',
+    'claude',
+    'bison',
+    'llama',
+    'mistral',
+    'gemma']
+n_llms = len(LLMs)
+
 MORAL_AXES = [
     'fairness',
     'feelings',
@@ -37,6 +47,17 @@ REASON_COLS = [
     'gemma_reason_1']
 models_to_reasons = dict(zip(MODELS, REASON_COLS))
 
+REASON_COLS_2 = [
+    'top_comment',
+    'gpt3.5_reason_2',
+    'gpt4_reason_2',
+    'claude_reason_2',
+    'bison_reason_2',
+    'llama_reason_2',
+    'mistral_reason_2',
+    'gemma_reason_2']
+models_to_reasons_2 = dict(zip(MODELS, REASON_COLS_2))
+
 LABEL_COLS = [
     'reddit_label',
     'gpt3.5_label_1',
@@ -48,7 +69,17 @@ LABEL_COLS = [
     'gemma_label_1']
 models_to_labels = dict(zip(MODELS, LABEL_COLS))
 
-LABEL_NUM_COLS = [label_col + '_num' for label_col in LABEL_COLS]
+LLM_LABEL_COLS = LABEL_COLS[1:]
+
+LABEL_COLS_2 = [
+    'gpt3.5_label_2',
+    'gpt4_label_2',
+    'claude_label_2',
+    'bison_label_2',
+    'llama_label_2',
+    'mistral_label_2',
+    'gemma_label_2']
+models_to_labels_2 = dict(zip(MODELS, LABEL_COLS_2))
 
 MORAL_LABELS_COLS = [
     'fairness_label',
@@ -65,10 +96,10 @@ MORAL_MODEL_LABEL_DICT = {
 
 MODEL_LABELS_PLOT = [
     'Redditor',
-    'GPT 3.5',
-    'GPT 4',
+    'GPT-3.5',
+    'GPT-4',
     'Claude Haiku',
-    'Bison',
+    'PaLM 2 Bison',
     'Llama 2 7B',
     'Mistral 7B',
     'Gemma 7B']
@@ -102,8 +133,33 @@ ALL_LABELS = [
     'bison_label_2',
     'bison_label_3',
     'llama_label_1',
+    'llama_label_2',
+    'llama_label_3',
     'mistral_label_1',
     'mistral_label_2',
+    'mistral_label_3',
     'gemma_label_1',
     'gemma_label_2',
     'gemma_label_3']
+
+ALL_REASONS = [
+    'top_comment',
+    'gpt3.5_reason_1',
+    'gpt3.5_reason_2',
+    'gpt3.5_reason_3',
+    'gpt4_reason_1',
+    'claude_reason_1',
+    'claude_reason_2',
+    'claude_reason_3',
+    'bison_reason_1',
+    'bison_reason_2',
+    'bison_reason_3',
+    'llama_reason_1',
+    'llama_reason_2',
+    'llama_reason_3',
+    'mistral_reason_1',
+    'mistral_reason_2',
+    'mistral_reason_3',
+    'gemma_reason_1',
+    'gemma_reason_2',
+    'gemma_reason_3']
