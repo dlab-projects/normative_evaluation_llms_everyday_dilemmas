@@ -7,11 +7,11 @@ from pyprojroot import here
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 
-run = 1
+run = 3
 model_id = "meta-llama/Llama-2-7b-chat-hf"
 dtype = torch.bfloat16
 
-df = pd.read_csv(here('data/aita_final_v4.csv'))
+df = pd.read_csv(here('data/aita_final_v18.csv'))
 verdicts = []
 labels = []
 

@@ -10,7 +10,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 model_id = "mistralai/Mistral-7B-Instruct-v0.2"
 dtype = torch.bfloat16
 
-df = pd.read_csv(here('data/aita_final_v4.csv'))
+df = pd.read_csv(here('data/aita_final_v18.csv'))
 verdicts = []
 labels = []
 
@@ -39,7 +39,7 @@ for idx in tqdm.tqdm(range(df.shape[0])):
 
 out_df = pd.DataFrame(
     data={
-        'mistral_label_2': labels,
-        'mistral_verdict_2': verdicts
+        'mistral_label_3': labels,
+        'mistral_verdict_3': verdicts
     }
-).to_csv('../data/mistral_run_2.csv', index=False)
+).to_csv('../data/mistral_run_3.csv', index=False)
