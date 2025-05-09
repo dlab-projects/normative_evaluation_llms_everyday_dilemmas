@@ -110,8 +110,7 @@ MORAL_AXES_LABELS_PLOT = [
     'Harms',
     'Honesty',
     'Relational Obligation',
-    'Social Norms'
-]
+    'Social Norms']
 
 AITA_LABELS_PLOT = [
     'NTA',
