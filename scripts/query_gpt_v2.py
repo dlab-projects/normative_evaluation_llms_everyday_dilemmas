@@ -10,9 +10,9 @@ from pyprojroot import here
 from moral_foundations_llms import utils
 
 API_PATH = os.path.join(os.environ['HOME'], 'openai/api.txt')
-IN_FILE = here('data/aita_final_v2.csv')
-OUT_FILE = here('data/aita_final_v2.csv')
-FAIL_FILE = here('data/exp_gpt_4_out.pkl')
+IN_FILE = here('data/aita_final_v28.csv')
+OUT_FILE = here('data/aita_final_v19.csv')
+FAIL_FILE = here('data/exp_gpt4_out_v19.pkl')
 # Read in API key
 with open(API_PATH, 'r') as f:
     openai.api_key = f.read().strip()
@@ -24,7 +24,7 @@ failed = []
 responses = {}
 
 # Iterate over posts
-for post in tqdm.tqdm(range(10000, 10828)):
+for post in tqdm.tqdm([100, 3654]):
     retries = 0
     completed = False
     while not completed and retries < 3:
@@ -65,8 +65,8 @@ for post in tqdm.tqdm(range(10000, 10828)):
         gpt_label = answer.split('Verdict: ')[1][:3]
         gpt_reason = answer.split('Reasoning:')[-1].strip()
         # Place in dataframe
-        df.loc[post, 'gpt4_label'] = gpt_label
-        df.loc[post, 'gpt4_reason'] = gpt_reason
+        df.loc[post, 'gpt4_label_2'] = gpt_label
+        df.loc[post, 'gpt4_reason_2'] = answer
         completed = True
     if not completed:
         failed.append(post)

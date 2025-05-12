@@ -326,7 +326,9 @@ def clean_single_label(s):
     return s.strip().lower().replace('.', '').replace('info', 'inf').replace('*', '').upper()
 
 
-def label_detector(s, check_first_line=True, return_first_if_multiple=False):
+def label_detector(s, check_first_line=True, return_first_if_multiple=True):
+    # Would-be replacements
+    s = s.replace('YWBTA', 'YTA')
     labels = ['YTA', 'NTA', 'ESH', 'NAH', 'INFO', 'INF',
               '^yta ', '^nta ', '^esh ', '^nah ',
               'Yta', 'Nta', 'Esh', 'Nah', 'NaH',
@@ -358,10 +360,28 @@ def label_detector(s, check_first_line=True, return_first_if_multiple=False):
             return 'OVERMATCH'
 
 def label_to_num(df):
+    """
+    Converts categorical labels in a DataFrame to numerical values.
+
+    This function replaces specific string labels in a DataFrame with their corresponding
+    numerical representations. The mapping is as follows:
+        - 'NTA' (Not the Asshole) -> 0
+        - 'YTA' (You're the Asshole) -> 1
+        - 'ESH' (Everyone Sucks Here) -> 2
+        - 'NAH' (No Assholes Here) -> 3
+        - 'INF' (Not Enough Info) -> 4
+
+    Args:
+        df (pd.DataFrame): The input DataFrame containing categorical labels.
+
+    Returns:
+        pd.DataFrame: A DataFrame with the categorical labels replaced by their numerical values.
+    """
+    # Replace the categorical labels with their corresponding numerical values
     return df.replace({
-        'NTA': 0,
-        'YTA': 1,
-        'ESH': 2,
-        'NAH': 3,
-        'INF': 4
-    })
+        'NTA': 0,  # Not the Asshole
+        'YTA': 1,  # You're the Asshole
+        'ESH': 2,  # Everyone Sucks Here
+        'NAH': 3,  # No Assholes Here
+        'INF': 4   # Not Enough Info
+    }).infer_objects(copy=False)  # Ensure the DataFrame's object types are inferred without copying
